@@ -1,0 +1,9 @@
+# Ignorar node_modules y .env en todos los microservicios
+microservices/products-service/node_modules/
+microservices/products-service/.env
+
+microservices/users-service/node_modules/
+microservices/users-service/.env
+
+microservices/ventas-service/node_modules/
+microservices/ventas-service/.env
