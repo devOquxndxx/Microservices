@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
 
     clienteID: {
-        type: NUMBER,
+        type: Number,
         required: true,
         unique: true,
         trim: true,
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
 
     }
- }, {
+}, {
 
     timestamps: true,
     collection: "usuarios" // Nombre de la colección en MongoDB

@@ -18,34 +18,41 @@ const ventasService = axios.create({
     timeout: 5000,
 })
 
-app.get('/clientes/:cliendeID/ventas', async (req, res) => {
-    const { clienteID } = req.params;
+app.get('/:id/ventas', async (req, res) => {
+    const clienteID = req.params.id;
     try {
-        const cliente = await User.findOne({ clienteID: parseInt(clienteID, 10) }).lean();
+        // const { isValidObjectId } = require('mongoose');
+
+        // if (!isValidObjectId(clienteID)) {
+        //     return res.status(400).json({ mensaje: 'Formato de ID inválido' });
+        // }
+
+        // buscamos el cliente en mongo
+        const cliente = await User.findById(clienteID);
         if (!cliente) {
             return res.status(404).json({ message: 'Cliente no encontrado' });
         }
 
-        const response = await axios.get(`${VENTAS_URL}/ventas`, {
-            params: { clienteID: clienteID },
-        });
+        const ventasResponse = await ventasService.get(`/ventasforCliente`, { params: { clienteID } })
 
-        const ventas = Array.isArray(response.data) ? response.data : response.data.ventas || [];
+        const historialVentas = ventasResponse.data;
 
+        // Si no hay ventas, devolvemos un mensaje adecuado
+        if (historialVentas.length === 0) {
+            return res.json({ message: 'No hay ventas para este cliente', ventas: [] });
+        }
+
+        // combinamos los datos y devolvemos la respuesta
         res.json({
             cliente,
-            historialVentas: ventas
+            ventas: historialVentas
         });
+
     } catch (error) {
-        if (error.response && error.response.status === 404) {
-            return res.status(404).json({ message: 'No hay ventas registradas para este cliente' });
-        }
-        console.error('Error:', error.message);
-        return res.status(500).json({ message: 'Error interno', error: error.message });
+        console.error('Error al obtener el historial de ventas:', error.message);
+        res.status(500).json({ message: 'Error al obtener el historial de ventas', error: error.message });
     }
-
-});
-
+})
 
 
 

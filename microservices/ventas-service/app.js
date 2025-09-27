@@ -8,8 +8,16 @@ const PORT = process.env.PORT || 3003;
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Servicio de Ventas');
+app.get('/', async (req, res) => {
+    const clienteID = req.query;
+
+    try {
+        const ventas = await Ventas.findAll({ where: {clienteID}});
+        res.json(ventas);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener las ventas del cliente', error: error.message });
+        console.error('Error al obtener las ventas del cliente:', error.message);
+    }
 });
 
 // ruta para ver las ventas 

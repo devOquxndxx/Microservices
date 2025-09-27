@@ -26,7 +26,7 @@ app.get('/productos/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id); // Buscamos el producto por ID
         if (!product) {
-             res.status(404).json({ message: 'Producto no encontrado' });
+            res.status(404).json({ message: 'Producto no encontrado' });
         } res.json(product);
     } catch (error) {
         // Maneja el error si el ID no es válido para Mongoose
@@ -83,7 +83,7 @@ app.delete('/productos/:id', async (req, res) => {
         
         // No se devuelve contenido, solo un código de éxito
         res.status(204).send();
-       
+    
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({ message: 'ID de producto inválido' });
