@@ -8,16 +8,29 @@ const PORT = process.env.PORT || 3003;
 
 app.use(express.json());
 
-app.get('/', async (req, res) => {
-    const clienteID = req.query;
+// con esto obtenemos ventas por clienteID (usado por el microservicio de usuarios)
+app.get('/ventasforCliente', async (req, res) => {
+    const { clienteID } = req.query;
 
     try {
-        const ventas = await Ventas.findAll({ where: {clienteID}});
+        if (!clienteID) {
+            return res.status(400).json({ message: 'clienteID es requerido' });
+        }
+
+        const ventas = await Ventas.findAll({ 
+            where: { clienteID: clienteID }
+        });
+        
         res.json(ventas);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener las ventas del cliente', error: error.message });
         console.error('Error al obtener las ventas del cliente:', error.message);
     }
+});
+
+// esta ruta la puse para probar
+app.get('/', async (req, res) => {
+    res.json({ message: 'Microservicio de Ventas funcionando correctamente' });
 });
 
 // ruta para ver las ventas 
@@ -38,7 +51,7 @@ app.get('/ventas', async (req, res) => {
     }
 });
 
-// ruta para ver una venta por ID
+// ruta para ver una venta por el ID
 app.get('/ventas/:id', async (req, res) => {
     try {
         const Venta = await Ventas.findByPk(req.params.id);
@@ -57,6 +70,7 @@ app.get('/ventas/:id', async (req, res) => {
     }
 });
 
+// ruta para crear una venta
 app.post('/ventas', async (req, res) => {
     try {
         const newVenta = await Ventas.create(req.body);
@@ -68,6 +82,7 @@ app.post('/ventas', async (req, res) => {
     }
 });
 
+// ruta para actualizar una venta
 app.put('/ventas/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -88,6 +103,7 @@ app.put('/ventas/:id', async (req, res) => {
     }
 });
 
+// ruta para eliminar una venta
 app.delete('/ventas/:id', async (req, res) => {
     try{
         const { id } = req.params;
